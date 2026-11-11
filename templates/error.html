@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+  <section class="card error-card">
+    <p class="eyebrow">Ошибка</p>
+    <h1>{{ title }}</h1>
+    <p>{{ message }}</p>
+    <a class="button button-primary" href="{{ url_for('index') if g.user else url_for('login') }}">Вернуться</a>
+  </section>
+{% endblock %}

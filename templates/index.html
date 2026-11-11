@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Загрузка выписки{% endblock %}
+{% block content %}
+  <section class="page-heading">
+    <div>
+      <p class="eyebrow">Новая конвертация</p>
+      <h1>Загрузите банковскую выписку</h1>
+      <p>Система прочитает PDF со второй страницы, заполнит известные категории и подготовит Excel для Akaunting.</p>
+    </div>
+    <div class="stat-card">
+      <span>Запомнено правил</span>
+      <strong>{{ rule_count }}</strong>
+    </div>
+  </section>
+
+  <section class="card upload-card">
+    <form id="upload-form" method="post" action="{{ url_for('upload') }}" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label class="drop-zone" id="drop-zone" for="pdf-input">
+        <input id="pdf-input" name="pdf" type="file" accept="application/pdf,.pdf" required>
+        <span class="upload-symbol" aria-hidden="true">PDF</span>
+        <strong id="file-label">Перетащите PDF сюда</strong>
+        <span>или нажмите, чтобы выбрать файл</span>
+        <small>Максимальный размер: 30 МБ</small>
+      </label>
+      <div class="upload-footer">
+        <p><strong>{{ account_name }}</strong><span>{{ currency_code }} · страницы 2–конец</span></p>
+        <button class="button button-primary" type="submit">Обработать выписку</button>
+      </div>
+    </form>
+  </section>
+
+  {% if recent_jobs %}
+    <section class="recent-section">
+      <div class="section-heading">
+        <h2>Последние файлы</h2>
+        <span>{{ recent_jobs|length }}</span>
+      </div>
+      <div class="recent-list">
+        {% for job in recent_jobs %}
+          <a class="recent-item" href="{{ url_for('review_job', job_id=job['id']) }}">
+            <span class="file-badge">PDF</span>
+            <span class="recent-copy">
+              <strong>{{ job['original_filename'] }}</strong>
+              <small>{{ job['created_at'][:16].replace('T', ' ') }}</small>
+            </span>
+            <span class="recent-action">Открыть</span>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+{% endblock %}

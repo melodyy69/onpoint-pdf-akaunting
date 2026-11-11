@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Вход{% endblock %}
+{% block body_class %}auth-page{% endblock %}
+{% block main_class %}auth-shell{% endblock %}
+{% block content %}
+  <section class="auth-card">
+    <div class="auth-brand">
+      <span class="brand-mark brand-mark-large" aria-hidden="true">BC</span>
+      <div>
+        <p class="eyebrow">Bank Converter</p>
+        <h1>Вход в систему</h1>
+      </div>
+    </div>
+    <p class="muted">Войдите, чтобы загрузить выписку и использовать сохранённые категории.</p>
+    <form class="stack-form" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label>
+        <span>Логин</span>
+        <input name="username" type="text" required autofocus autocomplete="username">
+      </label>
+      <label>
+        <span>Пароль</span>
+        <input name="password" type="password" required autocomplete="current-password">
+      </label>
+      <button class="button button-primary button-full" type="submit">Войти</button>
+    </form>
+  </section>
+{% endblock %}

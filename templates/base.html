@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{% block title %}Bank Statement Converter{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  {% if g.user %}
+    <header class="topbar">
+      <a class="brand" href="{{ url_for('index') }}" aria-label="На главную">
+        <span class="brand-mark" aria-hidden="true">BC</span>
+        <span>
+          <strong>Bank Converter</strong>
+          <small>PDF → Akaunting</small>
+        </span>
+      </a>
+      <div class="topbar-actions">
+        <span class="user-chip">{{ g.user['username'] }}</span>
+        <form method="post" action="{{ url_for('logout') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="button button-quiet" type="submit">Выйти</button>
+        </form>
+      </div>
+    </header>
+  {% endif %}
+
+  <main class="{% block main_class %}page-shell{% endblock %}">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-stack" aria-live="polite">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

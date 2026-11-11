@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Категории транзакций{% endblock %}
+{% block content %}
+  <section class="page-heading review-heading">
+    <div>
+      <p class="eyebrow">{{ job['original_filename'] }}</p>
+      <h1>Проверьте неизвестные категории</h1>
+      <p>{{ known_rows }} из {{ transaction_count }} строк уже заполнены из базы. Название категории должно точно совпадать с категорией в Akaunting.</p>
+    </div>
+    <a class="button button-secondary" href="{{ url_for('download_job', job_id=job['id']) }}">Скачать текущий Excel</a>
+  </section>
+
+  <section
+    id="review-app"
+    class="review-workspace"
+    data-save-url="{{ url_for('save_job_category', job_id=job['id']) }}"
+    data-download-url="{{ url_for('download_job', job_id=job['id']) }}"
+  >
+    <script id="unknown-transactions" type="application/json">{{ unknown_groups|tojson }}</script>
+    <script id="category-options" type="application/json">{{ category_suggestions|tojson }}</script>
+    <div class="review-progress-row">
+      <div>
+        <span id="progress-label">Осталось правил: {{ unknown_groups|length }}</span>
+        <small>Одна категория применяется к тому же типу операции и продавцу</small>
+      </div>
+      <div class="progress-track" aria-hidden="true"><span id="progress-bar"></span></div>
+    </div>
+
+    <div id="review-panels" class="review-grid" {% if not unknown_groups %}hidden{% endif %}>
+      <article class="panel transaction-panel">
+        <p class="panel-label">Транзакция</p>
+        <span id="transaction-type" class="type-pill"></span>
+        <h2 id="transaction-description"></h2>
+        <p id="transaction-full-description" class="transaction-source"></p>
+        <dl class="transaction-meta">
+          <div><dt>Даты</dt><dd id="transaction-dates"></dd></div>
+          <div><dt>Суммы</dt><dd id="transaction-amounts"></dd></div>
+          <div><dt>Повторений</dt><dd id="transaction-count"></dd></div>
+        </dl>
+      </article>
+
+      <article class="panel category-panel">
+        <p class="panel-label">Категория Akaunting</p>
+        <h2>Как классифицировать эту операцию?</h2>
+        <div id="category-picker" class="category-picker" {% if not category_suggestions %}hidden{% endif %}>
+          <div class="category-picker-heading">
+            <strong>Уже созданные категории</strong>
+            <span>Нажмите, чтобы выбрать</span>
+          </div>
+          <div class="category-slider-row">
+            <button id="category-prev" class="category-slider-arrow" type="button" aria-label="Показать предыдущие категории">‹</button>
+            <div id="category-slider" class="category-slider" role="group" aria-label="Сохранённые категории"></div>
+            <button id="category-next" class="category-slider-arrow" type="button" aria-label="Показать следующие категории">›</button>
+          </div>
+        </div>
+        <form id="category-form">
+          <label for="category-input">Точное название категории</label>
+          <input id="category-input" name="category_name" type="text" maxlength="120" list="category-suggestions" required autocomplete="off" placeholder="Например, Аренда">
+          <datalist id="category-suggestions">
+            {% for category in category_suggestions %}<option value="{{ category }}">{% endfor %}
+          </datalist>
+          <p class="field-help">После сохранения категория сразу попадёт в Excel и базу.</p>
+          <button id="save-category" class="button button-primary button-full" type="submit">Сохранить и продолжить</button>
+          <p id="category-error" class="inline-error" role="alert"></p>
+        </form>
+      </article>
+    </div>
+
+    <div id="review-complete" class="complete-card" {% if unknown_groups %}hidden{% endif %}>
+      <span class="complete-mark" aria-hidden="true">✓</span>
+      <h2>Все категории заполнены</h2>
+      <p>Excel обновлён. Новые правила уже сохранены и будут применены к следующим выпискам.</p>
+      <a class="button button-primary" href="{{ url_for('download_job', job_id=job['id']) }}">Скачать готовый Excel</a>
+      <a class="text-link" href="{{ url_for('index') }}">Обработать другой PDF</a>
+    </div>
+  </section>
+{% endblock %}
